@@ -21,7 +21,6 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
 export type State = {
   errors?: {
@@ -31,8 +30,9 @@ export type State = {
   };
   message?: string | null;
 };
+const CreateInvoice = FormSchema.omit({ id: true, date: true });
 export async function createInvoice(prevState: State, formData: FormData) {
-  const validatedFields = CreateInvoice.safeParse({
+  const validatedFields =  CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
@@ -45,7 +45,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
     };
   }
   // Prepare data for insertion into the database
-  const { customerId, amount, status } = validatedFields.data;
+  const { customerId, amount, status } =  validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
   try {
@@ -58,9 +58,10 @@ export async function createInvoice(prevState: State, formData: FormData) {
       message: 'Database Error: Failed to Create Invoice.',
     };
 
-    revalidatePath('/dashboard/invoices');
-    redirect('/dashboard/invoices');
+    
   }
+  revalidatePath('/dashboard/invoices');
+    redirect('/dashboard/invoices');
 }
 // Use Zod to update the expected types
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
@@ -112,10 +113,6 @@ export async function deleteInvoice(id: string) {
   }
 }
 
-
- 
-
- 
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
@@ -134,4 +131,3 @@ export async function authenticate(
     throw error;
   }
 }
-
